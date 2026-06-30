@@ -1,0 +1,98 @@
+[server]
+listen_addr = "0.0.0.0:8080"
+admin_listen_addr = "127.0.0.1:8081"
+read_timeout = "30s"
+write_timeout = "120s"
+max_request_bytes = 10485760  # 10MB
+confidential_only = true
+
+[database]
+path = "encproxy.db"
+max_open_conns = 25
+max_idle_conns = 5
+conn_max_lifetime = "5m"
+
+[attestation]
+refresh_interval = "60s"
+verdict_ttl = "10m"
+policy_digest = "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+
+# Tinfoil
+[[providers]]
+id = "tinfoil"
+name = "Tinfoil"
+base_url = "https://inference.tinfoil.sh/v1"
+trust_tier = "confidential"
+
+[providers.attestation_config]
+type = "tinfoil"
+repo = "tinfoilsh/confidential-model-router"
+
+[providers.pricing]
+"gpt-oss-120b" = 2000
+"gpt-oss-20b" = 500
+
+# PPQ private
+[[providers]]
+id = "ppq"
+name = "PPQ Private"
+base_url = "https://api.ppq.ai/private/v1"
+trust_tier = "encrypted"
+
+[providers.attestation_config]
+type = "ppq-private"
+bundle_url = "https://api.ppq.ai/private"
+
+[providers.pricing]
+"private/gpt-oss-120b" = 2000
+
+# NEAR AI
+[[providers]]
+id = "near"
+name = "NEAR AI"
+base_url = "https://cloud-api.near.ai/v1"
+trust_tier = "confidential"
+
+[providers.attestation_config]
+type = "near"
+
+# NanoGPT TEE namespace only
+[[providers]]
+id = "nanogpt"
+name = "NanoGPT"
+base_url = "https://nano-gpt.com/api/v1"
+trust_tier = "confidential"
+
+[providers.attestation_config]
+type = "nanogpt"
+
+# Redpill Phala namespace only
+[[providers]]
+id = "redpill"
+name = "Redpill"
+base_url = "https://api.redpill.ai/v1"
+trust_tier = "confidential"
+
+[providers.attestation_config]
+type = "redpill"
+
+# Public fallback catalog. Plaintext models are never used for confidential routing.
+[[providers]]
+id = "chutes"
+name = "Chutes"
+base_url = "https://llm.chutes.ai/v1"
+trust_tier = "plaintext"
+
+[providers.pricing]
+"meta-llama/Meta-Llama-3.1-8B-Instruct" = 1500
+
+# Direct PrivateMode is downgraded to plaintext unless PRIVATEMODE_PROXY_URL points to a local proxy.
+[[providers]]
+id = "privatemode"
+name = "PrivateMode"
+base_url = "https://api.privatemode.ai/v1"
+trust_tier = "confidential"
+
+[providers.attestation_config]
+type = "privatemode"
+manifest_url = "https://cdn.confidential.cloud/privatemode/v2/manifest.json"
