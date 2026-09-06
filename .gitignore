@@ -22,3 +22,5 @@ dist/
 build/
 
 .DS_Store
+
+.planning/debug/
